@@ -1,3 +1,10 @@
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/css/bootstrap-theme.css';
+
+import 'bootstrap/dist/js/bootstrap.js';
+
+import '../css/meucss.css';
+
 import { NegociacaoController } from './controller/NegociacaoController.js';
 import { Negociacao } from './domain/index.js';
 
@@ -15,9 +22,4 @@ const config = {
 };
 console.log(config);
 
-fetch('/negociacoes', config).then(() => console.log('Dado enviado com sucesso'));
-
-// Eventos
-// $('.form').addEventListener('submit', controller.adiciona.bind(controller));
-// $('#botao-apaga').addEventListener('click', controller.apaga.bind(controller));
-// $('#botao-importa').addEventListener('click', controller.importaNegociacoes.bind(controller));
+fetch(`${SERVICE_URL}/negociacoes`, config).then(() => console.log('Dado enviado com sucesso'));
