@@ -4,17 +4,16 @@ System.register([], function (_export, _context) {
     return {
         setters: [],
         execute: function () {
-            class ApplicationException extends Error {
+            let ApplicationException = class ApplicationException extends Error {
                 constructor(msg = '') {
                     super(msg);
                     this.name = this.constructor.name;
                 }
-            }
-
-            // hack do System.js para que a função tenha acesso à definição da classe
+            };
 
             _export('ApplicationException', ApplicationException);
 
+            // hack do System.js para que a função tenha acesso à definição da classe
             const exception = ApplicationException;
 
             function isApplicationException(err) {
