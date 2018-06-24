@@ -1,7 +1,37 @@
 System.register(['../domain/index.js', '../ui/index.js', '../util/index.js'], function (_export, _context) {
     "use strict";
 
-    var Negociacoes, NegociacaoService, Negociacao, NegociacoesView, MensagemView, Mensagem, DataInvalidaException, DateConverter, getNegociacaoDao, Bind;
+    var Negociacoes, NegociacaoService, Negociacao, NegociacoesView, MensagemView, Mensagem, DataInvalidaException, DateConverter, getNegociacaoDao, Bind, getExceptionMessage;
+
+    function _asyncToGenerator(fn) {
+        return function () {
+            var gen = fn.apply(this, arguments);
+            return new Promise(function (resolve, reject) {
+                function step(key, arg) {
+                    try {
+                        var info = gen[key](arg);
+                        var value = info.value;
+                    } catch (error) {
+                        reject(error);
+                        return;
+                    }
+
+                    if (info.done) {
+                        resolve(value);
+                    } else {
+                        return Promise.resolve(value).then(function (value) {
+                            step("next", value);
+                        }, function (err) {
+                            step("throw", err);
+                        });
+                    }
+                }
+
+                return step("next");
+            });
+        };
+    }
+
     return {
         setters: [function (_domainIndexJs) {
             Negociacoes = _domainIndexJs.Negociacoes;
@@ -16,6 +46,7 @@ System.register(['../domain/index.js', '../ui/index.js', '../util/index.js'], fu
         }, function (_utilIndexJs) {
             getNegociacaoDao = _utilIndexJs.getNegociacaoDao;
             Bind = _utilIndexJs.Bind;
+            getExceptionMessage = _utilIndexJs.getExceptionMessage;
         }],
         execute: function () {
             class NegociacaoController {
@@ -31,38 +62,57 @@ System.register(['../domain/index.js', '../ui/index.js', '../util/index.js'], fu
                 }
 
                 adiciona(event) {
-                    try {
-                        event.preventDefault();
-                        const negociacao = this._criaNegociacao();
-                        getNegociacaoDao().then(dao => dao.adiciona(negociacao)).then(() => {
-                            this._negociacoes.adiciona(negociacao);
-                            this._mensagem.texto = 'Negociação adicionada com sucesso';
-                            this._limparFormulario();
-                        }).catch(err => this._mensagem.texto = err);
-                    } catch (err) {
-                        console.log(err);
-                        console.log(err.stack);
+                    var _this = this;
 
-                        if (err instanceof DataInvalidaException) {
-                            this._mensagem.texto = err.message;
-                        } else {
-                            this._mensagem.texto = 'Um erro não esperado aconteceu. Entre em contato com o suporte';
+                    return _asyncToGenerator(function* () {
+                        try {
+                            event.preventDefault();
+                            const negociacao = _this._criaNegociacao();
+                            const dao = yield getNegociacaoDao();
+                            yield dao.adiciona(negociacao);
+                            _this._negociacoes.adiciona(negociacao);
+                            _this._mensagem.texto = 'Negociação adicionada com sucesso';
+                            _this._limparFormulario();
+                        } catch (err) {
+                            _this._mensagem.texto = getExceptionMessage(err);
                         }
-                    }
+                    })();
                 }
 
                 apaga() {
-                    getNegociacaoDao().then(dao => dao.apagaTodos()).then(() => {
-                        this._negociacoes.esvazia();
-                        this._mensagem.texto = 'Negociações apagadas com sucesso';
-                    }).catch(err => this._mensagem.texto = err);
+                    var _this2 = this;
+
+                    return _asyncToGenerator(function* () {
+                        try {
+                            const dao = yield getNegociacaoDao();
+                            yield dao.apagaTodos();
+                            _this2._negociacoes.esvazia();
+                            _this2._mensagem.texto = 'Negociações apagadas com sucesso';
+                        } catch (err) {
+                            _this2._mensagem.texto = getExceptionMessage(err);
+                        }
+                    })();
                 }
 
                 importaNegociacoes() {
-                    this._service.obterNegociacoesDoPeriodo().then(negociacoes => {
-                        negociacoes.filter(novaNegociacao => !this._negociacoes.paraArray().some(negociacaoExistente => novaNegociacao.equals(negociacaoExistente))).forEach(negociacao => this._negociacoes.adiciona(negociacao));
-                        this._mensagem.texto = 'Negociações importadas com sucesso!';
-                    }).catch(err => this._mensagem.texto = err);
+                    var _this3 = this;
+
+                    return _asyncToGenerator(function* () {
+                        try {
+                            const negociacoes = yield _this3._service.obterNegociacoesDoPeriodo();
+                            console.log(negociacoes);
+                            negociacoes.filter(function (novaNegociacao) {
+                                return !_this3._negociacoes.paraArray().some(function (negociacaoExistente) {
+                                    return novaNegociacao.equals(negociacaoExistente);
+                                });
+                            }).forEach(function (negociacao) {
+                                return _this3._negociacoes.adiciona(negociacao);
+                            });
+                            _this3._mensagem.texto = 'Negociações importadas com sucesso!';
+                        } catch (err) {
+                            _this3._mensagem.texto = getExceptionMessage(err);
+                        }
+                    })();
                 }
 
                 _limparFormulario() {
@@ -77,7 +127,19 @@ System.register(['../domain/index.js', '../ui/index.js', '../util/index.js'], fu
                 }
 
                 _init() {
-                    getNegociacaoDao().then(dao => dao.listaTodos()).then(negociacoes => negociacoes.forEach(negociacao => this._negociacoes.adiciona(negociacao))).catch(err => this._mensagem.texto = err);
+                    var _this4 = this;
+
+                    return _asyncToGenerator(function* () {
+                        try {
+                            const dao = yield getNegociacaoDao();
+                            const negociacoes = yield dao.listaTodos();
+                            negociacoes.forEach(function (negociacao) {
+                                return _this4._negociacoes.adiciona(negociacao);
+                            });
+                        } catch (err) {
+                            _this4._mensagem.texto = getExceptionMessage(err);
+                        }
+                    })();
                 }
             }
 
